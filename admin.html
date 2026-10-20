@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Panel de Edición Móvil | IdCard</title>
+  <meta name="theme-color" content="#090d16">
+  <link rel="stylesheet" href="css/admin.css">
+  <script src="js/admin.js" defer></script>
+</head>
+<body class="admin-body">
+
+  <div class="admin-container">
+    
+    <!-- Top Bar -->
+    <header class="admin-header">
+      <div>
+        <h1 id="adminTitle">Editar Mi Tarjeta</h1>
+        <small id="clientSlugBadge" style="color:var(--admin-text-muted);font-size:0.75rem;">Perfil: cargando...</small>
+      </div>
+      <a id="btnViewCard" href="index.html" class="btn-back">
+        <span>👁️ Ver Tarjeta</span>
+      </a>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-tabs" role="tablist">
+      <button id="tabForm" class="tab-btn active" role="tab" aria-selected="true">✏️ Formulario</button>
+      <button id="tabPreview" class="tab-btn" role="tab" aria-selected="false">👁️ Vista Previa</button>
+    </div>
+
+    <!-- TAB 1: FORM EDITOR -->
+    <div id="viewForm">
+      
+      <!-- Photo Uploader Section -->
+      <section class="photo-upload-section">
+        <input type="file" id="fileAvatarInput" accept="image/*" style="display: none;">
+        <div id="avatarWrapper" class="photo-preview-wrapper" title="Toca para cambiar la fotografía">
+          <img id="avatarPreview" class="photo-preview-img" src="" alt="Foto de perfil">
+          <div class="photo-overlay-hint">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>Tocar Foto</span>
+          </div>
+        </div>
+        <span class="photo-badge">📷 Toca la imagen para elegir foto de tu galería o cámara</span>
+      </section>
+
+      <!-- Section: Personal Info -->
+      <section class="form-section-card">
+        <h2 class="form-section-title">👤 Datos Principales</h2>
+        
+        <div class="form-group">
+          <label class="form-label" for="inpName">Nombre Completo *</label>
+          <input type="text" id="inpName" class="form-input" placeholder="Ej. Carlos Mora">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpTitle">Cargo o Profesión *</label>
+          <input type="text" id="inpTitle" class="form-input" placeholder="Ej. Director de Innovación">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpCompany">Empresa u Organización</label>
+          <input type="text" id="inpCompany" class="form-input" placeholder="Ej. InnovaTech Solutions">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpLocation">Ubicación</label>
+          <input type="text" id="inpLocation" class="form-input" placeholder="Ej. Medellín, Colombia">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpBio">Biografía / Breve Resumen</label>
+          <textarea id="inpBio" class="form-textarea" placeholder="Describe brevemente tus servicios o propuesta de valor..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpBadge">Estado / Disponibilidad</label>
+          <input type="text" id="inpBadge" class="form-input" placeholder="Ej. 🟢 Disponible para Proyectos">
+        </div>
+      </section>
+
+      <!-- Section: Direct Reach Actions -->
+      <section class="form-section-card">
+        <h2 class="form-section-title">⚡ Contacto Rápido</h2>
+
+        <div class="form-group">
+          <label class="form-label" for="inpWhatsApp">WhatsApp (con código de país sin + ni espacios)</label>
+          <input type="tel" id="inpWhatsApp" class="form-input" placeholder="Ej. 573109876543">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpPhone">Llamada Telefónica</label>
+          <input type="tel" id="inpPhone" class="form-input" placeholder="Ej. +573109876543">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpEmail">Correo Electrónico</label>
+          <input type="email" id="inpEmail" class="form-input" placeholder="Ej. carlos@innovatech.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpWebsite">Sitio Web / Portafolio</label>
+          <input type="url" id="inpWebsite" class="form-input" placeholder="Ej. https://innovatech.com">
+        </div>
+      </section>
+
+      <!-- Section: Social & Booking Links -->
+      <section class="form-section-card">
+        <h2 class="form-section-title">🌐 Enlaces y Redes</h2>
+
+        <div class="form-group">
+          <label class="form-label" for="inpLinkedIn">LinkedIn (URL o usuario)</label>
+          <input type="url" id="inpLinkedIn" class="form-input" placeholder="https://linkedin.com/in/tu-perfil">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpCalendar">Agendar Cita (Calendly / Cal.com)</label>
+          <input type="url" id="inpCalendar" class="form-input" placeholder="https://calendly.com/tu-usuario">
+        </div>
+      </section>
+
+      <!-- Section: Visual Theme -->
+      <section class="form-section-card">
+        <h2 class="form-section-title">🎨 Color de Acento</h2>
+        <div class="form-group">
+          <label class="form-label" for="inpAccentColor">Tono de la tarjeta</label>
+          <select id="inpAccentColor" class="form-select">
+            <option value="#6366f1">Indigo Eléctrico (Predeterminado)</option>
+            <option value="#06b6d4">Cyan Tecnológico</option>
+            <option value="#10b981">Esmeralda Ejecutivo</option>
+            <option value="#a855f7">Púrpura Creativo</option>
+            <option value="#f59e0b">Dorado Premium</option>
+            <option value="#ef4444">Rojo Impacto</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Section: GitHub Sync (Optional for Direct Publishing) -->
+      <section class="form-section-card" id="githubSyncCard" style="display:none;">
+        <h2 class="form-section-title">🔑 Publicación Directa a GitHub</h2>
+        <p style="font-size:0.75rem;color:var(--admin-text-muted);margin:0;">
+          Si ingresas tu GitHub Personal Access Token con permiso de repositorio, la app guardará los cambios directamente en tu GitHub sin intermediarios.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="inpGithubToken">GitHub Access Token (Opcional)</label>
+          <input type="password" id="inpGithubToken" class="form-input" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TAB 2: LIVE PREVIEW -->
+    <div id="viewPreview" style="display: none;">
+      <div class="preview-iframe-container">
+        <iframe id="previewIframe" class="preview-iframe" src="about:blank"></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Floating Action Bar -->
+  <div class="admin-action-bar">
+    <div class="admin-action-content">
+      <button id="btnSaveAll" class="btn-admin-primary">
+        <span>💾 Guardar Cambios</span>
+      </button>
+      <button id="btnExportJson" class="btn-admin-secondary" title="Descargar archivo de configuración">
+        <span>📥 Exportar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notice -->
+  <div id="adminToast" class="admin-toast" role="status"></div>
+
+</body>
+</html>

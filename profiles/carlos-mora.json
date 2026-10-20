@@ -1,0 +1,67 @@
+{
+  "profile": {
+    "name": "Carlos Mora",
+    "prefix": "",
+    "pronouns": "",
+    "title": "Director de Innovación",
+    "company": "InnovaTech Solutions",
+    "location": "Medellín, Colombia",
+    "avatar": "https://ui-avatars.com/api/?name=Carlos%20Mora&background=1e293b&color=f8fafc&size=400&bold=true",
+    "avatarFallbackText": "CA",
+    "status": {
+      "available": true,
+      "badge": "🟢 Disponible para Contacto"
+    },
+    "bio": "Tarjeta de presentación profesional de Carlos Mora."
+  },
+  "quickActions": [
+    {
+      "id": "whatsapp",
+      "type": "whatsapp",
+      "label": "WhatsApp Directo",
+      "sublabel": "Atención inmediata",
+      "value": "573109876543",
+      "message": "Hola Carlos, vi tu tarjeta NFC y quiero contactarte.",
+      "featured": true
+    },
+    {
+      "id": "phone",
+      "type": "phone",
+      "label": "Llamada Móvil",
+      "sublabel": "+573109876543",
+      "value": "+573109876543"
+    },
+    {
+      "id": "email",
+      "type": "email",
+      "label": "Correo Electrónico",
+      "sublabel": "carlos.mora@innovatech.com",
+      "value": "carlos.mora@innovatech.com",
+      "subject": "Contacto Profesional vía Tarjeta Digital"
+    }
+  ],
+  "socialLinks": [],
+  "vcard": {
+    "firstName": "Carlos",
+    "lastName": "Mora",
+    "organization": "InnovaTech Solutions",
+    "title": "Director de Innovación",
+    "phone": "+573109876543",
+    "email": "carlos.mora@innovatech.com",
+    "website": "",
+    "address": {
+      "city": "Medellín",
+      "country": "Colombia"
+    },
+    "note": "Contacto verificado mediante Tarjeta Digital NFC."
+  },
+  "settings": {
+    "theme": "dark-elite",
+    "accentColor": "#6366f1",
+    "accentGlow": "#6366f155",
+    "enableHaptics": true,
+    "enableShareModal": true,
+    "nfcBadgeText": "NFC & Quick Share Ready",
+    "footerText": "© 2026 Carlos Mora • Powered by IdCard Services"
+  }
+}

@@ -423,48 +423,92 @@ function renderSocialGrid(socialLinks) {
 }
 
 /**
- * Initialize Web App & Fetch Config
+ * Helper to determine client profile from URL parameter (?u=client-slug or #client-slug)
+ */
+function getProfileSlug() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('u') || params.get('client') || params.get('id');
+    if (slug && /^[a-zA-Z0-9_-]+$/.test(slug)) {
+      return slug;
+    }
+    if (window.location.hash && window.location.hash.length > 1) {
+      const hashSlug = window.location.hash.substring(1).split('?')[0];
+      if (/^[a-zA-Z0-9_-]+$/.test(hashSlug)) return hashSlug;
+    }
+  } catch (_) {}
+  return null;
+}
+
+/**
+ * Initialize Web App & Fetch Config (Supports Multi-Tenant Clients)
  */
 async function initApp() {
-  try {
-    const response = await fetch('config.json?v=' + Date.now(), { cache: 'no-cache' });
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
+  const currentSlug = getProfileSlug();
+  const candidates = currentSlug 
+    ? [`profiles/${currentSlug}.json`, `config.json`, `profiles/default.json`]
+    : ['config.json', 'profiles/default.json'];
+
+  let loadedConfig = null;
+  let lastError = null;
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(`${url}?v=${Date.now()}`, { cache: 'no-cache' });
+      if (response.ok) {
+        loadedConfig = await response.json();
+        break;
+      }
+    } catch (err) {
+      lastError = err;
     }
-    appConfig = await response.json();
+  }
 
-    // Render components
-    renderProfile(appConfig.profile || {});
-    renderQuickActions(appConfig.quickActions || []);
-    renderSocialGrid(appConfig.socialLinks || []);
-
-    // Custom Footer Text
-    const footer = document.getElementById('footerText');
-    if (footer && appConfig.settings?.footerText) {
-      footer.textContent = appConfig.settings.footerText;
-    }
-
-    // NFC badge text
-    const badgeText = document.getElementById('nfcBadgeText');
-    if (badgeText && appConfig.settings?.nfcBadgeText) {
-      badgeText.textContent = appConfig.settings.nfcBadgeText;
-    }
-
-    // Dynamic document title
-    if (appConfig.profile?.name) {
-      document.title = `${appConfig.profile.name} | Tarjeta de Presentación`;
-    }
-
-  } catch (err) {
-    console.error('Error al inicializar la tarjeta de presentación:', err);
+  if (!loadedConfig) {
+    console.error('Error al inicializar la tarjeta de presentación:', lastError);
     const container = document.getElementById('profileHeaderContainer');
     if (container) {
       container.innerHTML = `
         <div class="error-banner">
-          <strong>Aviso de Sistema:</strong> No se pudo cargar la configuración de la tarjeta. Verifique que <code>config.json</code> esté presente y tenga formato válido.
+          <strong>Aviso de Sistema:</strong> No se pudo cargar el perfil <code>${currentSlug || 'principal'}</code>. Verifique que exista en <code>profiles/</code>.
         </div>
       `;
     }
+    return;
+  }
+
+  appConfig = loadedConfig;
+
+  // Apply dynamic client theme accent if specified
+  if (appConfig.settings?.accentColor) {
+    document.documentElement.style.setProperty('--accent-primary', appConfig.settings.accentColor);
+  }
+  if (appConfig.settings?.accentGlow) {
+    document.documentElement.style.setProperty('--accent-glow', appConfig.settings.accentGlow);
+  }
+
+  // Render components
+  renderProfile(appConfig.profile || {});
+  renderQuickActions(appConfig.quickActions || []);
+  renderSocialGrid(appConfig.socialLinks || []);
+
+  // Custom Footer Text with Admin link
+  const footer = document.getElementById('footerText');
+  if (footer) {
+    const text = appConfig.settings?.footerText || '© 2026 Tarjeta Digital Profesional';
+    const adminUrl = currentSlug ? `admin.html?u=${encodeURIComponent(currentSlug)}` : 'admin.html';
+    footer.innerHTML = `${text} • <a href="${adminUrl}" style="color:var(--text-dim);text-decoration:none;font-size:0.85em;" title="Gestionar esta tarjeta">⚙️ Editar</a>`;
+  }
+
+  // NFC badge text
+  const badgeText = document.getElementById('nfcBadgeText');
+  if (badgeText && appConfig.settings?.nfcBadgeText) {
+    badgeText.textContent = appConfig.settings.nfcBadgeText;
+  }
+
+  // Dynamic document title
+  if (appConfig.profile?.name) {
+    document.title = `${appConfig.profile.name} | Tarjeta de Presentación Digital`;
   }
 }
 

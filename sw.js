@@ -1,12 +1,15 @@
 /**
  * Service Worker for Offline Resilience & Instant NFC Loading
  */
-const CACHE_NAME = 'antigravity-card-v1';
+const CACHE_NAME = 'antigravity-card-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './admin.html',
   './css/style.css',
+  './css/admin.css',
   './js/app.js',
+  './js/admin.js',
   './js/qrcode.min.js',
   './config.json',
   './manifest.webmanifest'
@@ -31,8 +34,8 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Network first for config.json to always show freshest details, falling back to cache
-  if (event.request.url.includes('config.json')) {
+  // Network first for config.json and client profiles to always show freshest details, falling back to cache
+  if (event.request.url.includes('config.json') || event.request.url.includes('profiles/')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
