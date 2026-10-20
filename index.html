@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Tarjeta de Presentación Digital | NFC Ready</title>
+  
+  <!-- SEO & Social Open Graph (Rich previews in WhatsApp, Telegram, iMessage) -->
+  <meta name="description" content="Tarjeta de presentación digital profesional e interactiva con soporte NFC, Quick Share y descarga instantánea de contacto vCard.">
+  <meta property="og:title" content="Tarjeta de Presentación Digital">
+  <meta property="og:description" content="Conecta conmigo en un toque: llamada, WhatsApp, portafolio y descarga directa a tu agenda.">
+  <meta property="og:type" content="profile">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Mobile & PWA Optimization -->
+  <meta name="theme-color" content="#070a13">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Favicon SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM18 6h-5c-1.1 0-2 .9-2 2v2.15c-.54.23-1.01.6-1.37 1.07L7.66 9.25c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l2.58 2.58c-.53.86-.83 1.87-.83 2.96 0 3.31 2.69 6 6 6s6-2.69 6-6V8c0-1.1-.9-2-2-2z'/></svg>">
+
+  <!-- Preload Styles & Core Logic -->
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/qrcode.min.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+
+  <!-- Ambient lighting backdrop effect -->
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- Main Mobile Canvas Container -->
+  <div class="app-container">
+    
+    <!-- Header Utility Bar -->
+    <header class="header-bar">
+      <div class="nfc-badge" id="nfcStatusBadge">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM18 6h-5c-1.1 0-2 .9-2 2v2.15c-.54.23-1.01.6-1.37 1.07L7.66 9.25c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l2.58 2.58c-.53.86-.83 1.87-.83 2.96 0 3.31 2.69 6 6 6s6-2.69 6-6V8c0-1.1-.9-2-2-2z"/></svg>
+        <span id="nfcBadgeText">NFC & Quick Share</span>
+      </div>
+      
+      <button id="btnShare" class="icon-btn-ghost" aria-label="Compartir tarjeta vía Quick Share o Código QR" title="Compartir">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+      <!-- Profile Card Container (Hydrated via JSON) -->
+      <section id="profileHeaderContainer" aria-label="Información del Perfil">
+        <!-- Initial skeleton state before data loads -->
+        <div class="profile-card">
+          <div class="avatar-wrapper skeleton-loader" style="border-radius: 50%;"></div>
+          <div class="skeleton-loader" style="height: 24px; width: 65%; margin-bottom: 8px;"></div>
+          <div class="skeleton-loader" style="height: 16px; width: 45%; margin-bottom: 8px;"></div>
+          <div class="skeleton-loader" style="height: 14px; width: 85%;"></div>
+        </div>
+      </section>
+
+      <!-- Primary Call to Action: Add Contact to Phonebook (vCard) -->
+      <section class="hero-action-container" aria-label="Acción Principal de Contacto">
+        <button id="btnSaveContact" class="btn-primary-action" aria-label="Guardar contacto en la agenda del teléfono">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span>Guardar en Contactos</span>
+        </button>
+      </section>
+
+      <!-- Quick Action Buttons -->
+      <section aria-labelledby="heading-quick-reach">
+        <h2 id="heading-quick-reach" class="section-title">Canales de Contacto Directo</h2>
+        <div id="quickActionsContainer" class="quick-actions-grid" role="list">
+          <!-- Dynamic action cards populated by app.js -->
+        </div>
+      </section>
+
+      <!-- Social & Professional Presence -->
+      <section aria-labelledby="heading-social-presence">
+        <h2 id="heading-social-presence" class="section-title">Redes Profesionales</h2>
+        <div id="socialGridContainer" class="social-grid" role="list">
+          <!-- Dynamic social links populated by app.js -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p id="footerText">© 2026 Tarjeta Digital Profesional • Antigravity</p>
+    </footer>
+
+  </div>
+
+  <!-- Share & QR Modal Dialog -->
+  <div id="shareModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Escanear o Compartir</h3>
+        <button id="btnCloseModal" class="icon-btn-ghost" aria-label="Cerrar ventana de compartir" style="min-width: 36px; min-height: 36px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="qrCodeContainer" class="qr-code-wrapper" aria-label="Código QR para abrir esta tarjeta">
+        <!-- Dynamic QR SVG will render here -->
+      </div>
+      
+      <p class="modal-hint">Apunta con la cámara de cualquier teléfono para abrir esta tarjeta al instante.</p>
+
+      <button id="btnCopyLink" class="btn-secondary-action">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </svg>
+        <span>Copiar Enlace de Tarjeta</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notice -->
+  <div id="toastNotice" class="toast-notice" role="status" aria-live="polite"></div>
+
+</body>
+</html>

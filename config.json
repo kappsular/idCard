@@ -1,0 +1,99 @@
+{
+  "profile": {
+    "name": "Diego Alzate",
+    "prefix": "Ing.",
+    "pronouns": "él / he",
+    "title": "Arquitecto de Soluciones & Tech Lead",
+    "company": "Antigravity Labs",
+    "location": "Bogotá, Colombia (Remoto Global)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=480&q=80",
+    "avatarFallbackText": "DA",
+    "status": {
+      "available": true,
+      "badge": "🟢 Disponible para Consultoría"
+    },
+    "bio": "Diseño y despliegue de arquitecturas de software cloud-native, sistemas autónomos impulsados por IA y plataformas móviles de alto rendimiento."
+  },
+  "quickActions": [
+    {
+      "id": "whatsapp",
+      "type": "whatsapp",
+      "label": "WhatsApp Directo",
+      "sublabel": "Respuesta inmediata",
+      "value": "573001234567",
+      "message": "Hola Diego, vi tu tarjeta digital NFC y me gustaría conectar contigo.",
+      "featured": true
+    },
+    {
+      "id": "phone",
+      "type": "phone",
+      "label": "Llamada Móvil",
+      "sublabel": "+57 300 123 4567",
+      "value": "+573001234567"
+    },
+    {
+      "id": "email",
+      "type": "email",
+      "label": "Correo Electrónico",
+      "sublabel": "contacto@diegoalzate.dev",
+      "value": "contacto@diegoalzate.dev",
+      "subject": "Contacto Profesional vía Tarjeta Digital"
+    },
+    {
+      "id": "website",
+      "type": "link",
+      "label": "Portafolio & Web",
+      "sublabel": "antigravity.lat",
+      "value": "https://antigravity.lat"
+    }
+  ],
+  "socialLinks": [
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/in/diegoalzate",
+      "username": "@diegoalzate"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "url": "https://github.com/kappsular",
+      "username": "kappsular"
+    },
+    {
+      "id": "x",
+      "name": "X / Twitter",
+      "url": "https://x.com/diegoalzate",
+      "username": "@diegoalzate"
+    },
+    {
+      "id": "calendar",
+      "name": "Agendar Reunión",
+      "url": "https://cal.com/diegoalzate",
+      "username": "30 min de discovery"
+    }
+  ],
+  "vcard": {
+    "firstName": "Diego",
+    "lastName": "Alzate",
+    "organization": "Antigravity Labs",
+    "title": "Arquitecto de Soluciones & Tech Lead",
+    "phone": "+573001234567",
+    "email": "contacto@diegoalzate.dev",
+    "website": "https://antigravity.lat",
+    "address": {
+      "city": "Bogotá",
+      "country": "Colombia"
+    },
+    "note": "Contacto verificado mediante Tarjeta Digital NFC Antigravity."
+  },
+  "settings": {
+    "theme": "dark-elite",
+    "accentColor": "#6366f1",
+    "accentGlow": "rgba(99, 102, 241, 0.35)",
+    "enableHaptics": true,
+    "enableShareModal": true,
+    "nfcBadgeText": "NFC & Quick Share Ready",
+    "footerText": "© 2026 Diego Alzate • Impulsado por Antigravity Architecture"
+  }
+}
