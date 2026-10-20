@@ -77,8 +77,8 @@
   },
   "settings": {
     "theme": "dark-elite",
-    "accentColor": "#6366f1",
-    "accentGlow": "#6366f155",
+    "accentColor": "#f59e0b",
+    "accentGlow": "#f59e0b55",
     "enableHaptics": true,
     "enableShareModal": true,
     "nfcBadgeText": "NFC & Quick Share Ready",
