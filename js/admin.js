@@ -431,15 +431,103 @@ function extractFormData() {
 }
 
 /**
- * Save Action
+ * UTF-8 Safe Base64 Encoder (Supports emojis, accents, ñ, etc.)
+ */
+function unicodeBtoa(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+/**
+ * Open/Close GitHub Token Modal
+ */
+function openTokenModal() {
+  const modal = document.getElementById('githubTokenModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeTokenModal() {
+  const modal = document.getElementById('githubTokenModal');
+  if (modal) modal.style.display = 'none';
+}
+
+/**
+ * Publish directly to GitHub repository via REST API
+ */
+async function publishToGitHub(data) {
+  const token = localStorage.getItem('gh_token') || document.getElementById('inpModalGhToken')?.value.trim();
+
+  if (!token) {
+    openTokenModal();
+    return;
+  }
+
+  showToast('⏳ Publicando cambios en GitHub...');
+
+  const targetFile = currentSlug === 'default' ? 'config.json' : `profiles/${currentSlug}.json`;
+  const apiUrl = `https://api.github.com/repos/kappsular/idCard/contents/${targetFile}`;
+
+  try {
+    // 1. Get current file SHA to allow updating existing file
+    let sha = null;
+    try {
+      const getRes = await fetch(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json'
+        }
+      });
+      if (getRes.ok) {
+        const fileInfo = await getRes.json();
+        sha = fileInfo.sha;
+      }
+    } catch (_) {}
+
+    // 2. Upload file via PUT
+    const jsonString = JSON.stringify(data, null, 2);
+    const contentBase64 = unicodeBtoa(jsonString);
+
+    const putRes = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `update: actualizar perfil ${currentSlug} desde panel móvil`,
+        content: contentBase64,
+        sha: sha || undefined
+      })
+    });
+
+    if (putRes.ok) {
+      localStorage.setItem('gh_token', token);
+      localStorage.removeItem(`draft_${currentSlug}`);
+      closeTokenModal();
+      showToast('🚀 ¡Publicado en GitHub! En 30 seg estará en tu tarjeta.');
+    } else if (putRes.status === 401) {
+      localStorage.removeItem('gh_token');
+      showToast('⚠️ Token inválido. Por favor ingrésalo de nuevo.');
+      openTokenModal();
+    } else {
+      const errJson = await putRes.json().catch(() => ({}));
+      showToast(`⚠️ Error al publicar: ${errJson.message || putRes.statusText}`);
+    }
+  } catch (err) {
+    console.error('Error al publicar en GitHub:', err);
+    showToast('⚠️ Error de conexión con GitHub');
+  }
+}
+
+/**
+ * Save & Publish Action
  */
 function saveAllChanges() {
   const data = extractFormData();
   currentConfig = data;
 
-  // Persist locally
+  // Persist locally in case of network issues
   localStorage.setItem(`draft_${currentSlug}`, JSON.stringify(data));
-  showToast('✅ ¡Cambios guardados localmente!');
 
   // Refresh preview iframe if visible
   const iframe = document.getElementById('previewIframe');
@@ -447,6 +535,9 @@ function saveAllChanges() {
     const targetUrl = currentSlug === 'default' ? 'index.html' : `index.html?u=${encodeURIComponent(currentSlug)}`;
     iframe.src = `${targetUrl}?preview=1&v=${Date.now()}`;
   }
+
+  // Publish to GitHub
+  publishToGitHub(data);
 }
 
 /**
@@ -510,6 +601,27 @@ document.addEventListener('DOMContentLoaded', () => {
       viewPreview.style.display = 'block';
       const targetUrl = currentSlug === 'default' ? 'index.html' : `index.html?u=${encodeURIComponent(currentSlug)}`;
       iframe.src = `${targetUrl}?v=${Date.now()}`;
+    });
+  }
+
+  // Token modal buttons
+  const btnCloseToken = document.getElementById('btnCloseTokenModal');
+  if (btnCloseToken) btnCloseToken.addEventListener('click', closeTokenModal);
+
+  const btnCancelToken = document.getElementById('btnCancelTokenModal');
+  if (btnCancelToken) btnCancelToken.addEventListener('click', closeTokenModal);
+
+  const btnSaveToken = document.getElementById('btnSaveTokenAndPublish');
+  if (btnSaveToken) {
+    btnSaveToken.addEventListener('click', () => {
+      const tokenInput = document.getElementById('inpModalGhToken');
+      const val = tokenInput?.value.trim();
+      if (val) {
+        localStorage.setItem('gh_token', val);
+        saveAllChanges();
+      } else {
+        showToast('Por favor ingresa un token válido');
+      }
     });
   }
 
