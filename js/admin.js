@@ -1,6 +1,6 @@
 /**
- * ADMIN CONTROLLER - MOBILE SELF-MANAGEMENT
- * Handles photo downscaling, form binding, live preview & multi-tenant profile saving
+ * ADMIN CONTROLLER - MOBILE SELF-MANAGEMENT WITH INTERACTIVE CROPPER
+ * Handles interactive photo panning/zooming, form binding, live preview & multi-tenant profile saving
  */
 
 'use strict';
@@ -8,6 +8,19 @@
 let currentSlug = 'default';
 let currentConfig = null;
 let newAvatarBase64 = null;
+
+// Interactive Cropper State
+const cropperState = {
+  img: null,
+  zoom: 1,
+  panX: 0,
+  panY: 0,
+  rotation: 0, // 0, 90, 180, 270
+  isDragging: false,
+  dragStartX: 0,
+  dragStartY: 0,
+  baseScale: 1
+};
 
 function showToast(msg) {
   const t = document.getElementById('adminToast');
@@ -29,36 +42,170 @@ function getSlugFromUrl() {
 }
 
 /**
- * Resize and compress smartphone camera photos on the client side
- * Uses HTML5 Canvas to produce an ultra-crisp 400x400 JPEG/WebP under 50KB
+ * Open Interactive Cropper Modal
  */
-function processImageFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const targetSize = 400;
-        const canvas = document.createElement('canvas');
-        canvas.width = targetSize;
-        canvas.height = targetSize;
-        const ctx = canvas.getContext('2d');
+function openCropperModal(imageSrc) {
+  const modal = document.getElementById('cropModal');
+  const img = new Image();
+  img.onload = () => {
+    cropperState.img = img;
+    cropperState.rotation = 0;
+    cropperState.panX = 0;
+    cropperState.panY = 0;
+    cropperState.zoom = 1;
 
-        // Center cover crop
-        const minDim = Math.min(img.width, img.height);
-        const sx = (img.width - minDim) / 2;
-        const sy = (img.height - minDim) / 2;
+    // The circular guide is 250px inside a 300x300 canvas
+    const guideSize = 250;
+    // Base scale so the smallest dimension covers the guide circle
+    cropperState.baseScale = Math.max(guideSize / img.width, guideSize / img.height);
 
-        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.86);
-        resolve(dataUrl);
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
+    const slider = document.getElementById('cropZoomSlider');
+    if (slider) slider.value = 1;
+
+    renderCropCanvas();
+    if (modal) modal.style.display = 'flex';
+  };
+  img.src = imageSrc;
+}
+
+/**
+ * Close Cropper Modal
+ */
+function closeCropperModal() {
+  const modal = document.getElementById('cropModal');
+  if (modal) modal.style.display = 'none';
+}
+
+/**
+ * Render image onto the 300x300 interactive canvas with pan, zoom and rotation
+ */
+function renderCropCanvas() {
+  const canvas = document.getElementById('cropCanvas');
+  if (!canvas || !cropperState.img) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.save();
+
+  // Move origin to canvas center (150, 150)
+  ctx.translate(w / 2, h / 2);
+
+  // Apply user pan
+  ctx.translate(cropperState.panX, cropperState.panY);
+
+  // Apply rotation
+  ctx.rotate((cropperState.rotation * Math.PI) / 180);
+
+  // Apply total scale
+  const totalScale = cropperState.baseScale * cropperState.zoom;
+  ctx.scale(totalScale, totalScale);
+
+  // Draw image centered at (0, 0)
+  ctx.drawImage(cropperState.img, -cropperState.img.width / 2, -cropperState.img.height / 2);
+
+  ctx.restore();
+}
+
+/**
+ * Confirm and generate high-res 400x400 cropped avatar
+ */
+function confirmCroppedPhoto() {
+  if (!cropperState.img) return;
+
+  const targetSize = 400;
+  const exportCanvas = document.createElement('canvas');
+  exportCanvas.width = targetSize;
+  exportCanvas.height = targetSize;
+  const ctx = exportCanvas.getContext('2d');
+
+  // Scale ratio between export canvas (400px) and UI guide circle (250px)
+  const ratio = targetSize / 250;
+
+  ctx.clearRect(0, 0, targetSize, targetSize);
+  ctx.save();
+
+  ctx.translate(targetSize / 2, targetSize / 2);
+  ctx.translate(cropperState.panX * ratio, cropperState.panY * ratio);
+  ctx.rotate((cropperState.rotation * Math.PI) / 180);
+
+  const totalScale = cropperState.baseScale * cropperState.zoom * ratio;
+  ctx.scale(totalScale, totalScale);
+
+  ctx.drawImage(cropperState.img, -cropperState.img.width / 2, -cropperState.img.height / 2);
+  ctx.restore();
+
+  newAvatarBase64 = exportCanvas.toDataURL('image/jpeg', 0.88);
+  const preview = document.getElementById('avatarPreview');
+  if (preview) preview.src = newAvatarBase64;
+
+  closeCropperModal();
+  showToast('📸 Foto ajustada a la medida');
+}
+
+/**
+ * Setup Touch & Mouse Drag / Zoom Event Listeners for the Cropper
+ */
+function setupCropperEvents() {
+  const wrapper = document.getElementById('cropViewportWrapper');
+  const slider = document.getElementById('cropZoomSlider');
+  const btnRotate = document.getElementById('btnRotatePhoto');
+  const btnClose = document.getElementById('btnCloseCrop');
+  const btnCancel = document.getElementById('btnCancelCrop');
+  const btnConfirm = document.getElementById('btnConfirmCrop');
+
+  if (wrapper) {
+    wrapper.addEventListener('pointerdown', (e) => {
+      cropperState.isDragging = true;
+      cropperState.dragStartX = e.clientX - cropperState.panX;
+      cropperState.dragStartY = e.clientY - cropperState.panY;
+      try { wrapper.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    wrapper.addEventListener('pointermove', (e) => {
+      if (!cropperState.isDragging) return;
+      cropperState.panX = e.clientX - cropperState.dragStartX;
+      cropperState.panY = e.clientY - cropperState.dragStartY;
+      renderCropCanvas();
+    });
+
+    const endDrag = (e) => {
+      cropperState.isDragging = false;
+      try { wrapper.releasePointerCapture(e.pointerId); } catch (_) {}
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+
+    wrapper.addEventListener('pointerup', endDrag);
+    wrapper.addEventListener('pointercancel', endDrag);
+
+    // Mouse wheel zoom
+    wrapper.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY * -0.0015;
+      const newZoom = Math.min(Math.max(cropperState.zoom + delta, 0.5), 3);
+      cropperState.zoom = newZoom;
+      if (slider) slider.value = newZoom;
+      renderCropCanvas();
+    }, { passive: false });
+  }
+
+  if (slider) {
+    slider.addEventListener('input', (e) => {
+      cropperState.zoom = parseFloat(e.target.value);
+      renderCropCanvas();
+    });
+  }
+
+  if (btnRotate) {
+    btnRotate.addEventListener('click', () => {
+      cropperState.rotation = (cropperState.rotation + 90) % 360;
+      renderCropCanvas();
+    });
+  }
+
+  if (btnClose) btnClose.addEventListener('click', closeCropperModal);
+  if (btnCancel) btnCancel.addEventListener('click', closeCropperModal);
+  if (btnConfirm) btnConfirm.addEventListener('click', confirmCroppedPhoto);
 }
 
 /**
@@ -321,23 +468,23 @@ function exportJsonFile() {
 // Bind DOM Listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadProfile();
+  setupCropperEvents();
 
   // Avatar picker
   const avatarWrapper = document.getElementById('avatarWrapper');
   const fileInput = document.getElementById('fileAvatarInput');
   if (avatarWrapper && fileInput) {
     avatarWrapper.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', async (e) => {
+    fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
-        try {
-          newAvatarBase64 = await processImageFile(file);
-          document.getElementById('avatarPreview').src = newAvatarBase64;
-          showToast('📸 Fotografía optimizada');
-        } catch (err) {
-          showToast('⚠️ Error al procesar imagen');
-        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          openCropperModal(event.target.result);
+        };
+        reader.readAsDataURL(file);
       }
+      fileInput.value = ''; // Reset input to allow re-selecting same file
     });
   }
 

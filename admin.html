@@ -176,5 +176,38 @@
   <!-- Toast Notice -->
   <div id="adminToast" class="admin-toast" role="status"></div>
 
+  <!-- Modal Interactivo de Recorte y Reacomodación de Fotografía -->
+  <div id="cropModal" class="crop-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="cropModalTitle">
+    <div class="crop-modal-card">
+      <div class="crop-modal-header">
+        <h3 id="cropModalTitle" class="crop-modal-title">Ajustar Fotografía</h3>
+        <button id="btnCloseCrop" class="crop-btn-close" aria-label="Cerrar ajuste">&times;</button>
+      </div>
+
+      <p class="crop-modal-hint">
+        Arrastra para encuadrar y ajusta el tamaño con el deslizador para que quede perfecta en el círculo.
+      </p>
+
+      <!-- Viewport de recorte interactivo -->
+      <div class="crop-viewport-wrapper" id="cropViewportWrapper">
+        <canvas id="cropCanvas" width="300" height="300"></canvas>
+        <div class="crop-circular-guide" aria-hidden="true"></div>
+      </div>
+
+      <!-- Controles de Zoom y Giro -->
+      <div class="crop-slider-container">
+        <span class="crop-slider-icon">🔍</span>
+        <input type="range" id="cropZoomSlider" min="0.5" max="3" step="0.02" value="1" class="crop-range-input" aria-label="Nivel de Zoom">
+        <button id="btnRotatePhoto" class="crop-btn-tool" title="Girar 90 grados">🔄 Girar</button>
+      </div>
+
+      <!-- Acciones de confirmación -->
+      <div class="crop-modal-footer">
+        <button id="btnCancelCrop" class="btn-crop-cancel">Cancelar</button>
+        <button id="btnConfirmCrop" class="btn-crop-apply">Listo, Aplicar</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

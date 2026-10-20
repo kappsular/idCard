@@ -321,3 +321,195 @@ body.admin-body {
   height: 100%;
   border: none;
 }
+
+/* ==========================================================================
+   INTERACTIVE PHOTO CROPPER & POSITIONING MODAL
+   ========================================================================== */
+
+.crop-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.crop-modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.crop-modal-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.crop-modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.crop-btn-close {
+  background: transparent;
+  border: none;
+  color: var(--admin-text-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.crop-modal-hint {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Viewport Canvas & Circular Cutout */
+.crop-viewport-wrapper {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #050811;
+  touch-action: none; /* Prevents scroll when panning photo on mobile */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--admin-border);
+}
+
+.crop-viewport-wrapper:active {
+  cursor: grabbing;
+}
+
+#cropCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.crop-circular-guide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.65);
+  pointer-events: none;
+}
+
+/* Slider & Rotate Controls */
+.crop-slider-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.crop-slider-icon {
+  font-size: 1rem;
+}
+
+.crop-range-input {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #1e293b;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.crop-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--admin-accent);
+  box-shadow: 0 2px 8px var(--admin-accent-glow);
+  cursor: pointer;
+}
+
+.crop-btn-tool {
+  background: var(--admin-surface-elevated);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-main);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.crop-btn-tool:hover {
+  background: #23304c;
+}
+
+/* Modal Action Buttons */
+.crop-modal-footer {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-crop-cancel {
+  flex: 1;
+  min-height: 46px;
+  background: var(--admin-surface-elevated);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-main);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-crop-apply {
+  flex: 1.5;
+  min-height: 46px;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--admin-accent-glow);
+  transition: transform 0.15s;
+}
+
+.btn-crop-apply:active {
+  transform: scale(0.98);
+}
