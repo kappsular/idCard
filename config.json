@@ -51,8 +51,8 @@
     {
       "id": "linkedin",
       "name": "LinkedIn",
-      "url": "https://www.linkedin.com/in/diegoalzate",
-      "username": "diegoalzate"
+      "url": "https://www.linkedin.com/in/dalzate",
+      "username": "dalzate"
     },
     {
       "id": "calendar",
@@ -82,6 +82,6 @@
     "enableHaptics": true,
     "enableShareModal": true,
     "nfcBadgeText": "NFC & Quick Share Ready",
-    "footerText": "© 2026 Diego Alzate • Powered by IdCard Services"
+    "footerText": "© 2026 Diego Alzate • Powered by Kappsular Inc Labs"
   }
 }
